@@ -35,6 +35,10 @@ Petal length (x) vs. petal width (y), all 150 samples colored by class. Shows th
 **4. Logistic regression** (`outputs/iris_logreg.txt`, `outputs/iris_logreg.png`, `outputs/iris_scatterplot_withboundaries.png`)
 Multiclass logistic regression trained on petal length + petal width only (80/20 stratified split, `random_state=42`). Outputs: accuracy + confusion matrix to text file; decision boundary overlaid on test-set points; decision boundary overlaid on full dataset. Uses only petal dimensions so the boundary can be rendered in 2D.
 
+## Documentation
+
+`docs/README-methods.md` documents the theoretical basis for each statistical and ML method used. Update it whenever a method is changed or a new one is added.
+
 ## Architecture notes
 
 `load_data()` returns a nested `defaultdict`: `data[class_name][column_name] -> list[float]`. All downstream functions (stats formatting, charting, logistic regression) consume this structure. The logistic regression uses only petal dimensions (not all 4 features) to produce interpretable 2D decision boundary plots.

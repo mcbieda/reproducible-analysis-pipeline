@@ -5,3 +5,5 @@
 !src/**
 !data/
 !data/**
+!docs/
+!docs/**
