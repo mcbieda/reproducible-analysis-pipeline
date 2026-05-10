@@ -1,0 +1,7 @@
+*
+!.gitignore
+!CLAUDE.md
+!src/
+!src/**
+!data/
+!data/**
