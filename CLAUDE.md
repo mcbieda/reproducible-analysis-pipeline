@@ -15,7 +15,7 @@ This runs all analysis in sequence: computes stats, saves charts, and trains/eva
 EDA and ML project on Fisher's Iris dataset, split into a reusable package and an orchestration script.
 
 - `data/iris.data` — 150 samples, CSV with no header: `sepal_length, sepal_width, petal_length, petal_width, class`
-- `src/iris/` — importable Python package: `data.py` (loading), `stats.py` (descriptive stats), `charts.py` (matplotlib), `model.py` (logistic regression)
+- `src/iris/` — importable Python package: `data.py` (loading), `stats.py` (descriptive stats), `charts.py` (matplotlib), `model.py` (logistic regression), `report.py` (HTML report builder)
 - `scripts/run_analysis.py` — entry point; defines all output paths and calls into `src/iris/`
 - `outputs/` — generated files (stats text, 4 PNG charts)
 
@@ -32,7 +32,7 @@ Grouped bar chart with one bar per class per measurement. Error bars show ±1 SD
 **3. Petal scatter plot** (`outputs/iris_scatter.png`)
 Petal length (x) vs. petal width (y), all 150 samples colored by class. Shows the natural clustering and the linear separability of setosa from the other two.
 
-**4. Logistic regression** (`outputs/iris_logreg.txt`, `outputs/iris_logreg.png`, `outputs/iris_scatterplot_withboundaries.png`)
+**4. Logistic regression** (`outputs/iris_logreg.txt`, `outputs/iris_logreg.png`, `outputs/iris_scatterplot_withboundaries.png`, `outputs/iris_report.html`)
 Multiclass logistic regression trained on petal length + petal width only (80/20 stratified split, `random_state=42`). Outputs: accuracy + confusion matrix to text file; decision boundary overlaid on test-set points; decision boundary overlaid on full dataset. Uses only petal dimensions so the boundary can be rendered in 2D.
 
 ## Documentation

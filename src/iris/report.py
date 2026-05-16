@@ -1,0 +1,122 @@
+import base64
+
+from iris.data import COLUMNS
+from iris.stats import mean, median, sd
+
+CSS = """
+body { font-family: Georgia, serif; background: #fff; color: #222; margin: 0; padding: 2rem; }
+.wrap { max-width: 900px; margin: 0 auto; }
+h1 { font-size: 1.8rem; border-bottom: 2px solid #333; padding-bottom: .4rem; }
+h2 { font-size: 1.25rem; margin-top: 2.5rem; color: #333; }
+p.caption { color: #555; font-size: .9rem; margin-top: .3rem; }
+img { width: 100%; display: block; margin: 1rem 0; border: 1px solid #ddd; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; margin: 1rem 0; }
+th { background: #333; color: #fff; padding: .45rem .7rem; text-align: left; }
+td { padding: .4rem .7rem; border-bottom: 1px solid #ddd; }
+tr:nth-child(even) td { background: #f7f7f7; }
+.acc { font-size: 1.1rem; margin: .5rem 0 1rem; }
+"""
+
+STAT_LABELS = ["mean", "median", "sd"]
+STAT_FNS    = [mean, median, sd]
+
+
+def _img(path):
+    with open(path, "rb") as f:
+        b64 = base64.b64encode(f.read()).decode()
+    return f'<img src="data:image/png;base64,{b64}">'
+
+
+def _stats_table(data):
+    classes = sorted(data.keys())
+    rows = ["<table>", "<tr><th>Class</th><th>Variable</th>"
+            + "".join(f"<th>{s}</th>" for s in STAT_LABELS) + "</tr>"]
+    for cls in classes:
+        first = True
+        for col in COLUMNS:
+            xs = data[cls][col]
+            cls_cell = f'<td rowspan="{len(COLUMNS)}">{cls}</td>' if first else ""
+            first = False
+            vals = "".join(f"<td>{fn(xs):.4f}</td>" for fn in STAT_FNS)
+            rows.append(f"<tr>{cls_cell}<td>{col}</td>{vals}</tr>")
+    rows.append("</table>")
+    return "\n".join(rows)
+
+
+def _lr_section(lr_report_text):
+    lines = lr_report_text.strip().splitlines()
+
+    acc_line = next((l for l in lines if l.startswith("Accuracy:")), "")
+    acc = acc_line.split()[-1] if acc_line else "n/a"
+
+    train_line = next((l for l in lines if l.startswith("Train size:")), "")
+
+    # Find confusion matrix: header row is the line after "Confusion matrix"
+    cm_idx = next((i for i, l in enumerate(lines) if "Confusion matrix" in l), None)
+    cm_html = ""
+    if cm_idx is not None:
+        header_parts = lines[cm_idx + 1].split()
+        cm_rows = ["<table>",
+                   "<tr><th></th>" + "".join(f"<th>{h}</th>" for h in header_parts) + "</tr>"]
+        for row_line in lines[cm_idx + 2:]:
+            parts = row_line.split()
+            if not parts:
+                break
+            label = parts[0]
+            vals = "".join(f"<td>{v}</td>" for v in parts[1:])
+            cm_rows.append(f"<tr><th>{label}</th>{vals}</tr>")
+        cm_rows.append("</table>")
+        cm_html = "\n".join(cm_rows)
+
+    return acc, train_line.strip(), cm_html
+
+
+def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, lr_scatter_path):
+    acc, train_info, cm_html = _lr_section(lr_report_text)
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Iris Dataset Analysis</title>
+<style>{CSS}</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Iris Dataset Analysis</h1>
+<p>Fisher's Iris dataset — 150 samples across three species
+(<em>setosa</em>, <em>versicolor</em>, <em>virginica</em>),
+four measurements each (sepal/petal length and width).</p>
+
+<h2>Descriptive Statistics</h2>
+<p>Per-class mean, median, and sample standard deviation (ddof=1) for all four measurements.</p>
+{_stats_table(data)}
+
+<h2>Mean ± SD by Measurement and Class</h2>
+{_img(chart_path)}
+<p class="caption">Error bars show ±1 SD. Petal dimensions show the clearest separation between species.</p>
+
+<h2>Petal Length vs Petal Width</h2>
+{_img(scatter_path)}
+<p class="caption">All 150 samples. Setosa is linearly separable; versicolor and virginica overlap slightly.</p>
+
+<h2>Logistic Regression Model</h2>
+<p>Multiclass softmax logistic regression trained on petal length and petal width only
+(80/20 stratified split, random_state=42). Using petal dimensions allows a 2D decision boundary plot.</p>
+<p class="acc"><strong>Accuracy: {acc}</strong> &nbsp;·&nbsp; {train_info}</p>
+<p>Confusion matrix (rows = actual, columns = predicted):</p>
+{cm_html}
+
+<h2>Decision Boundary — Test Set</h2>
+{_img(lr_plot_path)}
+<p class="caption">Shaded regions show model decision areas. Points are held-out test samples.</p>
+
+<h2>Decision Boundary — All Data</h2>
+{_img(lr_scatter_path)}
+<p class="caption">Same decision boundary overlaid on all 150 samples.</p>
+
+</div>
+</body>
+</html>"""
+    return html
