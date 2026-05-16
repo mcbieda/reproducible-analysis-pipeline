@@ -5,7 +5,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running the script
 
 ```bash
-cd /home/markb/claude-play
 python src/explore_iris.py
 ```
 
