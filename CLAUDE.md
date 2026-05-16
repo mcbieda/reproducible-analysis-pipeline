@@ -5,17 +5,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Running the script
 
 ```bash
-python src/explore_iris.py
+python scripts/run_analysis.py
 ```
 
 This runs all analysis in sequence: computes stats, saves charts, and trains/evaluates the logistic regression model. All outputs land in `outputs/`.
 
 ## Project structure
 
-Single-script EDA and ML project on Fisher's Iris dataset.
+EDA and ML project on Fisher's Iris dataset, split into a reusable package and an orchestration script.
 
 - `data/iris.data` — 150 samples, CSV with no header: `sepal_length, sepal_width, petal_length, petal_width, class`
-- `src/explore_iris.py` — all logic: data loading, hand-rolled stats (mean/median/sd), matplotlib charts, sklearn logistic regression
+- `src/iris/` — importable Python package: `data.py` (loading), `stats.py` (descriptive stats), `charts.py` (matplotlib), `model.py` (logistic regression)
+- `scripts/run_analysis.py` — entry point; defines all output paths and calls into `src/iris/`
 - `outputs/` — generated files (stats text, 4 PNG charts)
 
 ## Analyses and outputs
@@ -40,12 +41,10 @@ Multiclass logistic regression trained on petal length + petal width only (80/20
 
 ## Architecture notes
 
-`load_data()` returns a nested `defaultdict`: `data[class_name][column_name] -> list[float]`. All downstream functions (stats formatting, charting, logistic regression) consume this structure. The logistic regression uses only petal dimensions (not all 4 features) to produce interpretable 2D decision boundary plots.
+`load_data()` returns a nested `defaultdict`: `data[class_name][column_name] -> list[float]`. All downstream functions (stats formatting, charting, logistic regression) consume this structure. The `src/iris/` modules do not import each other except `stats.py` and `charts.py` importing from `data.py` for `COLUMNS` — all wiring is in `scripts/run_analysis.py`. The logistic regression uses only petal dimensions (not all 4 features) to produce interpretable 2D decision boundary plots.
 
 ## Dependencies
 
-No requirements file. Imports in use: `matplotlib`, `numpy`, `sklearn`. Install with:
-
 ```bash
-pip install matplotlib numpy scikit-learn
+pip install -r requirements.txt
 ```

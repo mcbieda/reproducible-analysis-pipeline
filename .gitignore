@@ -1,6 +1,7 @@
 *
 !.gitignore
 !CLAUDE.md
+!requirements.txt
 !src/
 !src/**
 !data/
