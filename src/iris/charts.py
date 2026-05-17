@@ -18,7 +18,7 @@ def save_chart(data, path):
     offsets = np.linspace(-(n_classes - 1) / 2, (n_classes - 1) / 2, n_classes) * width
 
     fig, ax = plt.subplots(figsize=(10, 6))
-    colors = ["#4c72b0", "#dd8452", "#55a868"]
+    colors = ["#0072B2", "#E69F00", "#CC79A7"]
 
     for i, cls in enumerate(classes):
         ax.bar(
@@ -42,9 +42,9 @@ def save_chart(data, path):
 
 def save_scatter(data, path):
     styles = {
-        "Iris-setosa":     {"color": "#4c72b0", "marker": "o"},
-        "Iris-versicolor": {"color": "#dd8452", "marker": "s"},
-        "Iris-virginica":  {"color": "#55a868", "marker": "^"},
+        "Iris-setosa":     {"color": "#0072B2", "marker": "o"},
+        "Iris-versicolor": {"color": "#E69F00", "marker": "s"},
+        "Iris-virginica":  {"color": "#CC79A7", "marker": "^"},
     }
 
     fig, ax = plt.subplots(figsize=(8, 6))

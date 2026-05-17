@@ -7,9 +7,9 @@ from sklearn.model_selection import train_test_split
 
 def run_logistic_regression(data, report_path, plot_path, scatter_path):
     styles = {
-        "Iris-setosa":     {"color": "#4c72b0", "marker": "o"},
-        "Iris-versicolor": {"color": "#dd8452", "marker": "s"},
-        "Iris-virginica":  {"color": "#55a868", "marker": "^"},
+        "Iris-setosa":     {"color": "#0072B2", "marker": "o"},
+        "Iris-versicolor": {"color": "#E69F00", "marker": "s"},
+        "Iris-virginica":  {"color": "#CC79A7", "marker": "^"},
     }
     classes = sorted(data.keys())
 
@@ -56,7 +56,7 @@ def run_logistic_regression(data, report_path, plot_path, scatter_path):
     Z = model.predict(np.c_[xx.ravel(), yy.ravel()])
     Z = np.array([classes.index(z) for z in Z]).reshape(xx.shape)
 
-    bg_colors = ["#c6d4e8", "#f2d5c0", "#c2dfca"]
+    bg_colors = ["#b3d4e8", "#f5e0b3", "#ecd4e3"]
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.contourf(xx, yy, Z, levels=[-0.5, 0.5, 1.5, 2.5], colors=bg_colors, alpha=0.4)
