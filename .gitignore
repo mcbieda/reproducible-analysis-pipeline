@@ -10,5 +10,9 @@
 !data/**
 !docs/
 !docs/**
+!utilities/
+!utilities/**
+!data_derived/
+!data_derived/**
 __pycache__
 *.pyc
