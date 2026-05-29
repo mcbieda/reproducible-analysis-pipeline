@@ -26,6 +26,7 @@ COMBINED_CSV = os.path.join(OUT_DIR, "iris-combined.csv")
 COLUMNS = ["sampleID", "sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
 FEATURES = ["sepal_length", "sepal_width", "petal_length", "petal_width"]
 
+RANDOM_SEED = 42
 SIM_SD = 0.2
 SIM_SAMPLES_PER_CLASS = 4
 
@@ -127,6 +128,7 @@ def write_combined():
 
 
 def main():
+    random.seed(RANDOM_SEED)
     os.makedirs(OUT_DIR, exist_ok=True)
     rows = load_iris()
     write_basicmod(rows)
