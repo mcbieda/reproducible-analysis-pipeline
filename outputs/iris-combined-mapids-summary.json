@@ -1,0 +1,23 @@
+{
+  "n_in_combined_only": 6,
+  "ids_in_combined_only": [
+    "A-0489",
+    "A-4809",
+    "B-8349",
+    "C-3433",
+    "E-1041",
+    "F-1140"
+  ],
+  "n_in_mapids_only": 8,
+  "ids_in_mapids_only": [
+    "A-1877",
+    "A-3045",
+    "B-0932",
+    "B-6616",
+    "C-7124",
+    "E-1114",
+    "E-4372",
+    "F-5574"
+  ],
+  "n_in_common": 156
+}

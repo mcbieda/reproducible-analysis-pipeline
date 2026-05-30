@@ -32,7 +32,7 @@ The resulting python program will be named iris-modification.py
  	- the goal is to create simulated data that is like the class data from the original iris data
  	- for each class, calculate the mean of each feature.
  	- using the means for each class and an sd of 0.2, randomly create new samples for each class
- 	- for the new samples, round to one decimal place
+ 	- for the new samples, round to one decimal place. If a value is negative, set it as 0.0
  	- for the new samples, use a sampleID like above except the number must be from 9000 to 9999
  	- the file should have the same column format etc as the the iris-basicmod.csv
 

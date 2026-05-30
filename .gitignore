@@ -2,6 +2,10 @@
 !.gitignore
 !CLAUDE.md
 !SPEC_modiris.md
+!SPEC_mapandqc.md
+!SPEC_mergeandqc.md
+!outputs/
+!outputs/**
 !requirements.txt
 !src/
 !src/**
