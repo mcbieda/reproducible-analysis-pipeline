@@ -108,7 +108,7 @@ def write_simdata(means):
                 row = {"class": cls, "sampleID": make_sample_id(9000, 9999, used_ids)}
                 for feat, mean in feat_means.items():
                     value = mean + SIM_SD * box_muller()
-                    row[feat] = round(value, 1)
+                    row[feat] = max(0.0, round(value, 1))
                 writer.writerow({col: row[col] for col in COLUMNS})
     print(f"Wrote {SIMDATA_CSV}")
 
