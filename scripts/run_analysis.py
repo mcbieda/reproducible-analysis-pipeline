@@ -1,5 +1,8 @@
 import argparse
+import hashlib
+import subprocess
 import sys
+from datetime import datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -32,6 +35,16 @@ if __name__ == "__main__":
     else:
         data = load_data(DATA_PATH)
 
+    input_path = Path(args.input)
+    md5 = hashlib.md5(input_path.read_bytes()).hexdigest()
+    run_timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    try:
+        git_commit = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], stderr=subprocess.DEVNULL
+        ).decode().strip()
+    except Exception:
+        git_commit = "unavailable"
+
     output = format_stats(data)
     print(output)
     with open(STATS_PATH, "w") as f:
@@ -48,7 +61,9 @@ if __name__ == "__main__":
     print(f"Logistic regression plot written to {LR_PLOT_PATH}")
     print(f"Logistic regression report written to {LR_REPORT_PATH}")
 
-    html = build_report(data, lr_report, CHART_PATH, SCATTER_PATH, LR_PLOT_PATH, LR_SCATTER_PATH)
+    html = build_report(data, lr_report, CHART_PATH, SCATTER_PATH, LR_PLOT_PATH, LR_SCATTER_PATH,
+                        input_file=str(input_path), md5=md5,
+                        timestamp=run_timestamp, git_commit=git_commit)
     with open(HTML_REPORT_PATH, "w") as f:
         f.write(html)
     print(f"HTML report written to {HTML_REPORT_PATH}")

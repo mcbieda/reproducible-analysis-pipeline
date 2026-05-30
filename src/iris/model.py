@@ -29,13 +29,15 @@ def run_logistic_regression(data, report_path, plot_path, scatter_path):
     y_pred = model.predict(X_test)
 
     acc = accuracy_score(y_test, y_pred)
+    acc_full = accuracy_score(y, model.predict(X))
     cm = confusion_matrix(y_test, y_pred, labels=classes)
 
     lines = [
         "Logistic Regression — petal length + petal width",
         "=" * 50,
         f"Train size: {len(X_train)}   Test size: {len(X_test)}",
-        f"Accuracy:   {acc:.4f}",
+        f"Accuracy (test set):        {acc:.4f}",
+        f"Accuracy (full dataset):    {acc_full:.4f}",
         "",
         "Confusion matrix (rows=actual, cols=predicted):",
         f"{'':20}" + "".join(f"{c.split('-')[1]:>14}" for c in classes),
@@ -83,7 +85,7 @@ def run_logistic_regression(data, report_path, plot_path, scatter_path):
                    **styles[cls])
     ax.set_xlabel("Petal length (cm)")
     ax.set_ylabel("Petal width (cm)")
-    ax.set_title(f"Logistic regression decision boundary (all data, acc={acc:.2f})")
+    ax.set_title(f"Logistic regression decision boundary (all data, acc={acc_full:.2f})")
     ax.legend()
     ax.spines[["top", "right"]].set_visible(False)
     fig.tight_layout()

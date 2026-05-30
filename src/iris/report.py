@@ -15,6 +15,10 @@ th { background: #333; color: #fff; padding: .45rem .7rem; text-align: left; }
 td { padding: .4rem .7rem; border-bottom: 1px solid #ddd; }
 tr:nth-child(even) td { background: #f7f7f7; }
 .acc { font-size: 1.1rem; margin: .5rem 0 1rem; }
+table.provenance { width: auto; margin: .8rem 0 1.5rem; font-size: .9rem; }
+table.provenance th { background: #555; padding: .35rem .8rem; white-space: nowrap; }
+table.provenance td { padding: .35rem .8rem; font-family: monospace; }
+table.provenance code { font-size: .85rem; }
 """
 
 STAT_LABELS = ["mean", "median", "sd"]
@@ -46,8 +50,11 @@ def _stats_table(data):
 def _lr_section(lr_report_text):
     lines = lr_report_text.strip().splitlines()
 
-    acc_line = next((l for l in lines if l.startswith("Accuracy:")), "")
+    acc_line = next((l for l in lines if "Accuracy (test set):" in l), "")
     acc = acc_line.split()[-1] if acc_line else "n/a"
+
+    acc_full_line = next((l for l in lines if "Accuracy (full dataset):" in l), "")
+    acc_full = acc_full_line.split()[-1] if acc_full_line else "n/a"
 
     train_line = next((l for l in lines if l.startswith("Train size:")), "")
 
@@ -68,11 +75,14 @@ def _lr_section(lr_report_text):
         cm_rows.append("</table>")
         cm_html = "\n".join(cm_rows)
 
-    return acc, train_line.strip(), cm_html
+    return acc, acc_full, train_line.strip(), cm_html
 
 
-def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, lr_scatter_path):
-    acc, train_info, cm_html = _lr_section(lr_report_text)
+def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, lr_scatter_path,
+                 input_file="", md5="", timestamp="", git_commit=""):
+    acc, acc_full, train_info, cm_html = _lr_section(lr_report_text)
+    n_samples = sum(len(data[cls]["sepal_length"]) for cls in data)
+    n_classes = len(data)
 
     html = f"""<!DOCTYPE html>
 <html lang="en">
@@ -85,7 +95,13 @@ def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, l
 <div class="wrap">
 
 <h1>Iris Dataset Analysis</h1>
-<p>Fisher's Iris dataset — 150 samples across three species
+<table class="provenance">
+  <tr><th>Input file</th><td>{input_file}</td></tr>
+  <tr><th>MD5</th><td><code>{md5}</code></td></tr>
+  <tr><th>Run date/time</th><td>{timestamp}</td></tr>
+  <tr><th>Git commit</th><td><code>{git_commit}</code></td></tr>
+</table>
+<p>Fisher's Iris dataset — {n_samples} samples across {n_classes} species
 (<em>setosa</em>, <em>versicolor</em>, <em>virginica</em>),
 four measurements each (sepal/petal length and width).</p>
 
@@ -99,12 +115,12 @@ four measurements each (sepal/petal length and width).</p>
 
 <h2>Petal Length vs Petal Width</h2>
 {_img(scatter_path)}
-<p class="caption">All 150 samples. Setosa is linearly separable; versicolor and virginica overlap slightly.</p>
+<p class="caption">All {n_samples} samples. Setosa is linearly separable; versicolor and virginica overlap slightly.</p>
 
 <h2>Logistic Regression Model</h2>
 <p>Multiclass softmax logistic regression trained on petal length and petal width only
 (80/20 stratified split, random_state=42). Using petal dimensions allows a 2D decision boundary plot.</p>
-<p class="acc"><strong>Accuracy: {acc}</strong> &nbsp;·&nbsp; {train_info}</p>
+<p class="acc"><strong>Test-set accuracy: {acc}</strong> &nbsp;·&nbsp; <strong>Full-dataset accuracy: {acc_full}</strong> &nbsp;·&nbsp; {train_info}</p>
 <p>Confusion matrix (rows = actual, columns = predicted):</p>
 {cm_html}
 
@@ -114,7 +130,7 @@ four measurements each (sepal/petal length and width).</p>
 
 <h2>Decision Boundary — All Data</h2>
 {_img(lr_scatter_path)}
-<p class="caption">Same decision boundary overlaid on all 150 samples.</p>
+<p class="caption">Same decision boundary overlaid on all {n_samples} samples.</p>
 
 </div>
 </body>
