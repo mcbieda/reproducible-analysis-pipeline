@@ -1,9 +1,10 @@
+import argparse
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from iris.data import load_data
+from iris.data import load_data, load_data_csv
 from iris.stats import format_stats
 from iris.charts import save_chart, save_scatter
 from iris.model import run_logistic_regression
@@ -19,7 +20,17 @@ LR_SCATTER_PATH = "outputs/iris_scatterplot_withboundaries.png"
 HTML_REPORT_PATH = "outputs/iris_report.html"
 
 if __name__ == "__main__":
-    data = load_data(DATA_PATH)
+    parser = argparse.ArgumentParser(description="Run Iris analysis pipeline.")
+    parser.add_argument("input", nargs="?", default=DATA_PATH,
+                        help="Input file. Use the default iris.data format, or a CSV with headers "
+                             "and QC_CALL column (only PASS rows are analysed).")
+    args = parser.parse_args()
+
+    if args.input != DATA_PATH:
+        print(f"Loading {args.input} (CSV format, filtering to QC_CALL==PASS)")
+        data = load_data_csv(args.input)
+    else:
+        data = load_data(DATA_PATH)
 
     output = format_stats(data)
     print(output)
