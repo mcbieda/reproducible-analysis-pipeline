@@ -2,9 +2,9 @@
 iris-modification.py — generates derived iris datasets.
 
 Outputs (relative to repo root):
-  data_derived/iris-basicmod.csv   — original data with headers and sampleID
-  data_derived/iris-simdata.csv    — simulated samples based on per-class means
-  data_derived/iris-combined.csv   — basicmod + simdata stacked
+  data_derived/iris-original-add-ids.csv  — original data with headers and sampleID
+  data_derived/iris-simulated-data.csv    — simulated samples based on per-class means
+  data_derived/iris-all-samples.csv       — iris-original-add-ids + iris-simulated-data stacked
 """
 
 import csv
@@ -19,9 +19,9 @@ OUT_DIR = os.path.join(REPO_ROOT, "data_derived")
 
 IRIS_DATA = os.path.join(DATA_DIR, "iris.data")
 
-BASICMOD_CSV = os.path.join(OUT_DIR, "iris-basicmod.csv")
-SIMDATA_CSV = os.path.join(OUT_DIR, "iris-simdata.csv")
-COMBINED_CSV = os.path.join(OUT_DIR, "iris-combined.csv")
+BASICMOD_CSV = os.path.join(OUT_DIR, "iris-original-add-ids.csv")
+SIMDATA_CSV = os.path.join(OUT_DIR, "iris-simulated-data.csv")
+COMBINED_CSV = os.path.join(OUT_DIR, "iris-all-samples.csv")
 
 COLUMNS = ["sampleID", "sepal_length", "sepal_width", "petal_length", "petal_width", "class"]
 FEATURES = ["sepal_length", "sepal_width", "petal_length", "petal_width"]

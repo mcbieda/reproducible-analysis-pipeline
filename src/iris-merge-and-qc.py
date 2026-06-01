@@ -2,10 +2,10 @@
 iris-merge-and-qc.py — merges iris-combined.csv with map/QC files via inner joins.
 
 Outputs:
-  data_derived/iris-combined-mapids.csv               — iris-combined inner-joined with iris-mapids on sampleID
-  data_derived/iris-combined-mapids-summary.json      — join diagnostics
-  data_derived/iris-combined-mapids-qc.csv            — above inner-joined with iris-qc on FINAL_ID
-  data_derived/iris-combined-mapids-qc-summary.json   — join diagnostics
+  data_derived/iris-samples-id-mapped.csv                    — iris-all-samples inner-joined with iris-id-map on sampleID
+  outputs/iris-samples-id-mapped-summary.json                — join diagnostics
+  data_derived/iris-samples-id-mapped-qc-filtered.csv        — above inner-joined with iris-qc-calls on FINAL_ID
+  outputs/iris-samples-id-mapped-qc-filtered-summary.json    — join diagnostics
 """
 
 import csv
@@ -17,14 +17,14 @@ REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DERIVED_DIR = os.path.join(REPO_ROOT, "data_derived")
 OUTPUTS_DIR = os.path.join(REPO_ROOT, "outputs")
 
-COMBINED_CSV       = os.path.join(DERIVED_DIR, "iris-combined.csv")
-MAPIDS_CSV         = os.path.join(DERIVED_DIR, "iris-mapids.csv")
-QC_CSV             = os.path.join(DERIVED_DIR, "iris-qc.csv")
+COMBINED_CSV       = os.path.join(DERIVED_DIR, "iris-all-samples.csv")
+MAPIDS_CSV         = os.path.join(DERIVED_DIR, "iris-id-map.csv")
+QC_CSV             = os.path.join(DERIVED_DIR, "iris-qc-calls.csv")
 
-COMBINED_MAPIDS_CSV     = os.path.join(DERIVED_DIR, "iris-combined-mapids.csv")
-COMBINED_MAPIDS_SUMMARY = os.path.join(OUTPUTS_DIR, "iris-combined-mapids-summary.json")
-COMBINED_QC_CSV         = os.path.join(DERIVED_DIR, "iris-combined-mapids-qc.csv")
-COMBINED_QC_SUMMARY     = os.path.join(OUTPUTS_DIR, "iris-combined-mapids-qc-summary.json")
+COMBINED_MAPIDS_CSV     = os.path.join(DERIVED_DIR, "iris-samples-id-mapped.csv")
+COMBINED_MAPIDS_SUMMARY = os.path.join(OUTPUTS_DIR, "iris-samples-id-mapped-summary.json")
+COMBINED_QC_CSV         = os.path.join(DERIVED_DIR, "iris-samples-id-mapped-qc-filtered.csv")
+COMBINED_QC_SUMMARY     = os.path.join(OUTPUTS_DIR, "iris-samples-id-mapped-qc-filtered-summary.json")
 
 RANDOM_SEED = 42
 

@@ -17,7 +17,7 @@ def load_data(path):
 
 
 def load_data_csv(path):
-    """Load a CSV with headers (iris-combined-mapids-qc format), keeping only QC_CALL==PASS rows."""
+    """Load a CSV with headers (iris-samples-id-mapped-qc-filtered format), keeping only QC_CALL==PASS rows."""
     data = defaultdict(lambda: defaultdict(list))
     with open(path, newline="") as f:
         reader = csv.DictReader(f)

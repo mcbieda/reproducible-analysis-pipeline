@@ -2,8 +2,8 @@
 iris-make-map-qc.py — generates a simulated map file and QC file from iris-combined.csv.
 
 Outputs:
-  data_derived/iris-mapids.csv  — sampleID -> FINAL_ID (162 - 6 dropped + 8 simulated = 164 rows)
-  data_derived/iris-qc.csv      — FINAL_ID + QC_CALL (164 - 4 dropped + 6 new = 166 rows)
+  data_derived/iris-id-map.csv      — sampleID -> FINAL_ID (162 - 6 dropped + 8 simulated = 164 rows)
+  data_derived/iris-qc-calls.csv    — FINAL_ID + QC_CALL (164 - 4 dropped + 6 new = 166 rows)
 """
 
 import csv
@@ -13,9 +13,9 @@ import random
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DERIVED_DIR = os.path.join(REPO_ROOT, "data_derived")
 
-COMBINED_CSV = os.path.join(DERIVED_DIR, "iris-combined.csv")
-MAPIDS_CSV   = os.path.join(DERIVED_DIR, "iris-mapids.csv")
-QC_CSV       = os.path.join(DERIVED_DIR, "iris-qc.csv")
+COMBINED_CSV = os.path.join(DERIVED_DIR, "iris-all-samples.csv")
+MAPIDS_CSV   = os.path.join(DERIVED_DIR, "iris-id-map.csv")
+QC_CSV       = os.path.join(DERIVED_DIR, "iris-qc-calls.csv")
 
 RANDOM_SEED = 42
 
@@ -78,7 +78,7 @@ def write_qc(map_finals, used_finals):
     drop_indices = set(random.sample(range(len(kept)), 4))
     kept = [fid for i, fid in enumerate(kept) if i not in drop_indices]
 
-    # 6 new FINAL_IDs not in iris-mapids.csv
+    # 6 new FINAL_IDs not in iris-id-map.csv
     new_finals = [make_final_id(used_finals) for _ in range(6)]
 
     all_finals = kept + new_finals
