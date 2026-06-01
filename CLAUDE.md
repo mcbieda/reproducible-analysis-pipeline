@@ -39,6 +39,11 @@ Multiclass logistic regression trained on petal length + petal width only (80/20
 
 `docs/README-methods.md` documents the theoretical basis for each statistical and ML method used. Update it whenever a method is changed or a new one is added.
 
+Specification documents for the utility scripts live in `docs/`:
+- `docs/spec-iris-modification.md` — spec for `utilities/iris-modification.py`
+- `docs/spec-iris-make-idmap-qc-files.md` — spec for `utilities/iris-make-map-qc.py`
+- `docs/spec-iris-merge-and-qc.md` — spec for `scripts/iris-merge-and-qc.py`
+
 ## Architecture notes
 
 `load_data()` returns a nested `defaultdict`: `data[class_name][column_name] -> list[float]`. All downstream functions (stats formatting, charting, logistic regression) consume this structure. The `src/iris/` modules do not import each other except `stats.py` and `charts.py` importing from `data.py` for `COLUMNS` — all wiring is in `scripts/run_analysis.py`. The logistic regression uses only petal dimensions (not all 4 features) to produce interpretable 2D decision boundary plots.

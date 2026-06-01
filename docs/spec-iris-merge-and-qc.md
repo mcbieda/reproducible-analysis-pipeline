@@ -19,7 +19,7 @@ The resulting python program will be named iris-merge-and-qc.py
 # OUTPUTS
  - csv outputs from this should be put in the /data_derived directory
  - json outputs from this should be put in the /outputs directory
- - the py file should be placed in /src, NOT /utilities, and is a stand alone py file
+ - the py file should be placed in /scripts, NOT /utilities, and is a stand alone py file
 
  - data_derived/iris-combined-mapids.csv and outputs/iris-combined-mapids-summary.json 
  	- use iris-combined.csv, iris-mapids.csv
