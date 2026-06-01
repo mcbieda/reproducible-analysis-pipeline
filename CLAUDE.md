@@ -15,9 +15,13 @@ This runs all analysis in sequence: computes stats, saves charts, and trains/eva
 EDA and ML project on Fisher's Iris dataset, split into a reusable package and an orchestration script.
 
 - `data/iris.data` — 150 samples, CSV with no header: `sepal_length, sepal_width, petal_length, petal_width, class`
+- `data_derived/` — intermediate pipeline outputs (staged CSV files produced by utilities and scripts)
 - `src/iris/` — importable Python package: `data.py` (loading), `stats.py` (descriptive stats), `charts.py` (matplotlib), `model.py` (logistic regression), `report.py` (HTML report builder)
-- `scripts/run_analysis.py` — entry point; defines all output paths and calls into `src/iris/`
-- `outputs/` — generated files (stats text, 4 PNG charts)
+- `scripts/run_analysis.py` — EDA and ML entry point; defines all output paths and calls into `src/iris/`
+- `scripts/iris-merge-and-qc.py` — merges `iris-all-samples.csv` with `iris-id-map.csv` and `iris-qc-calls.csv` via inner joins; writes filtered CSV outputs and JSON join diagnostics to `outputs/`
+- `utilities/iris-modification.py` — generates `iris-original-add-ids.csv`, `iris-simulated-data.csv`, and `iris-all-samples.csv` in `data_derived/`
+- `utilities/iris-make-map-qc.py` — generates demonstration ID mapping and QC fixture files (`iris-id-map.csv`, `iris-qc-calls.csv`) in `data_derived/`; not part of the analysis pipeline
+- `outputs/` — final analysis outputs (stats text, PNG charts, HTML report, JSON join summaries)
 
 ## Analyses and outputs
 
