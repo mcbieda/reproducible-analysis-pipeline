@@ -78,8 +78,28 @@ def _lr_section(lr_report_text):
     return acc, acc_full, train_line.strip(), cm_html
 
 
+def _pipeline_counts_section(counts):
+    if not counts:
+        return ""
+    rows = [
+        ("Starting samples", "iris-all-samples.csv",                        counts.get("all_samples", "—")),
+        ("After ID mapping", "iris-samples-id-mapped.csv",                  counts.get("after_id_mapping", "—")),
+        ("After QC join",    "iris-samples-id-mapped-qc-filtered.csv",      counts.get("after_qc_join", "—")),
+        ("After QC PASS filter", "(used in analysis)",                      counts.get("after_qc_pass", "—")),
+    ]
+    trs = "".join(
+        f"<tr><td>{stage}</td><td><code>{f}</code></td><td style='text-align:right'>{n}</td></tr>"
+        for stage, f, n in rows
+    )
+    return f"""<h2>Pipeline Sample Counts</h2>
+<table>
+<tr><th>Stage</th><th>File</th><th>Samples</th></tr>
+{trs}
+</table>"""
+
+
 def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, lr_scatter_path,
-                 input_file="", md5="", timestamp="", git_commit=""):
+                 input_file="", md5="", timestamp="", git_commit="", pipeline_counts=None):
     acc, acc_full, train_info, cm_html = _lr_section(lr_report_text)
     n_samples = sum(len(data[cls]["sepal_length"]) for cls in data)
     n_classes = len(data)
@@ -88,20 +108,27 @@ def build_report(data, lr_report_text, chart_path, scatter_path, lr_plot_path, l
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Iris Dataset Analysis</title>
+<title>Modified Iris Dataset Analysis</title>
 <style>{CSS}</style>
 </head>
 <body>
 <div class="wrap">
 
-<h1>Iris Dataset Analysis</h1>
+<h1>Modified Iris Dataset Analysis</h1>
+<p>This analysis uses a synthetic dataset partially derived from Fisher's Iris dataset.
+Sample IDs were added to the original measurements and additional simulated samples were generated
+from per-class means. The dataset then passed through an ID mapping step — linking sample IDs to
+canonical identifiers — and a QC filtering step, retaining only samples with a PASS call.
+These steps reflect the structure of a typical scientific analysis pipeline in which sample
+tracking and quality control are applied before downstream analysis.</p>
 <table class="provenance">
   <tr><th>Input file</th><td>{input_file}</td></tr>
   <tr><th>MD5</th><td><code>{md5}</code></td></tr>
   <tr><th>Run date/time</th><td>{timestamp}</td></tr>
   <tr><th>Git commit</th><td><code>{git_commit}</code></td></tr>
 </table>
-<p>Fisher's Iris dataset — {n_samples} samples across {n_classes} species
+{_pipeline_counts_section(pipeline_counts)}
+<p>Analysis dataset — {n_samples} samples across {n_classes} species
 (<em>setosa</em>, <em>versicolor</em>, <em>virginica</em>),
 four measurements each (sepal/petal length and width).</p>
 
