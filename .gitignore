@@ -2,8 +2,6 @@
 !.gitignore
 !CLAUDE.md
 !README.md
-!outputs/
-!outputs/**
 !requirements.txt
 !src/
 !src/**
