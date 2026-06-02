@@ -1,8 +1,10 @@
 # Reproducible Analysis Pipeline
 
-A demonstration of reproducible scientific analysis pipelines built using agentic coding with [Claude Code](https://claude.ai/code). The project uses Fisher's Iris dataset to illustrate a realistic multi-stage pipeline: sample ID assignment, ID mapping, QC filtering, exploratory data analysis, and machine learning.
+A major issue with agentic coding is trusting the results. Intermediate outputs allow one to inspect and verify steps along the way to the final outputs, as opposed to hoping that they are correct. Here I present a demonstration of reproducible scientific analysis pipelines built using agentic coding with [Claude Code](https://claude.ai/code). The project uses a modified Fisher's Iris dataset to illustrate a realistic multi-stage pipeline: ID mapping from one set of IDs to another, QC filtering, exploratory data analysis, and machine learning. Notably, there are IDs that don't map to the final IDs and also samples that fail QC and some that don't have QC information. There are some intermediate outputs that display these ids for investigation.
 
-The focus is on two ideas: (1) making every pipeline stage an explicit, inspectable artifact rather than an in-memory transformation, and (2) exploring how agentic coding can support good data engineering practices when explicit specifications and reproducibility are treated as first-class concerns.
+The focus is on two ideas: (1) making every pipeline stage an explicit, inspectable artifact rather than an in-memory transformation, and (2) exploring how agentic coding can support good data engineering practices when explicit specifications and reproducibility are treated as critical and necessary.
+
+**This repo will be updated periodically to test approaches to code and output validation.**
 
 ---
 
@@ -11,9 +13,9 @@ The focus is on two ideas: (1) making every pipeline stage an explicit, inspecta
 Each stage of the pipeline is designed to illustrate a pattern common in scientific data analysis:
 
 - **Explicit intermediate outputs** — every transformation writes a named file to `data_derived/`, making the pipeline auditable and each step independently inspectable
-- **ID mapping as a first-class step** — samples flow through the pipeline under their original IDs until they are linked to a canonical identifier via an explicit merge, with diagnostics recording what matched and what didn't
-- **QC filtering with provenance** — QC calls are applied as a join rather than an in-place filter, so the pre- and post-QC datasets both exist and the filtering decision is recorded
-- **Reproducibility by construction** — fixed random seeds, hand-rolled statistics, and no in-memory state between stages
+- **ID mapping with missing IDs** — samples flow through the pipeline under their original IDs until they are linked to a canonical identifier via an explicit merge, with diagnostics recording what matched and what didn't
+- **QC filtering with provenance and missing QC values** — QC calls are applied as a join rather than an in-place filter, so the pre- and post-QC datasets both exist and the filtering decision is recorded
+- **Reproducibility by construction** — fixed random seeds, explicit computation of statistics, and no in-memory state between stages
 
 ---
 
@@ -22,14 +24,13 @@ Each stage of the pipeline is designed to illustrate a pattern common in scienti
 In a standard analysis, an **ID mapping file** (linking sample IDs to canonical identifiers) and a **QC calls file** (recording pass/fail status per sample) would be supplied from upstream sources — a sample tracking system and a QC pipeline respectively. The analysis pipeline in `scripts/` is designed around this assumption.
 
 ```
-data/iris.data
-    │
+data/iris-all-samples.csv (a modified iris data file)    │
     ▼
 scripts/iris-merge-and-qc.py   ← receives iris-id-map.csv and iris-qc-calls.csv as inputs
     ├── data_derived/iris-samples-id-mapped.csv
-    ├── outputs/iris-samples-id-mapped-summary.json        (join diagnostics)
+    ├── outputs/iris-samples-id-mapped-summary.json        (id join diagnostics)
     ├── data_derived/iris-samples-id-mapped-qc-filtered.csv
-    └── outputs/iris-samples-id-mapped-qc-filtered-summary.json
+    └── outputs/iris-samples-id-mapped-qc-filtered-summary.json (summary of qc filtering)
     │
     ▼
 scripts/run_analysis.py
@@ -46,7 +47,7 @@ scripts/run_analysis.py
 
 ## Generating Data for Demonstration
 
-To make this a fully self-contained demonstration, `utilities/` contains scripts that generate the input files the pipeline would normally receive from upstream. These are not part of the analysis itself — they exist to produce realistic inputs.
+The `iris` dataset does not contain sampleIDs or column names, as given in typical files. Nor is there a need for any QC calls on the samples. To make this a more realistic and fully self-contained demonstration, `utilities/` contains scripts that generate the input files the pipeline would normally receive from upstream. These are not part of the analysis itself — they exist to produce realistic inputs. Altering these to add additional samples or samples with different characteristics is straightforward.
 
 ```
 data/iris.data
@@ -55,7 +56,7 @@ data/iris.data
 utilities/iris-modification.py
     ├── data_derived/iris-original-add-ids.csv    (raw data + column names + sampleIDs)
     ├── data_derived/iris-simulated-data.csv       (simulated samples from class means)
-    └── data_derived/iris-all-samples.csv          (combined)
+    └── data_derived/iris-all-samples.csv          (combined; final input file of sample data)
 
 utilities/iris-make-map-qc.py
     ├── data_derived/iris-id-map.csv               (sampleID → FINAL_ID mapping)
@@ -96,7 +97,7 @@ python scripts/iris-merge-and-qc.py
 python scripts/run_analysis.py
 ```
 
-All intermediate files land in `data_derived/`. Final outputs — charts, stats, HTML report, and JSON join summaries — land in `outputs/`.
+All intermediate files land in `data_derived/`. Final outputs — charts, stats, HTML report, and JSON join summaries — land in `outputs/`. Note that the HTML report summarizes the data analysis, but not the ID mapping and filtering steps.
 
 ---
 
