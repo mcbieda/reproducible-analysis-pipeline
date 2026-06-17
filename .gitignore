@@ -20,4 +20,6 @@ __pycache__
 *.pyc
 
 # keep /outputs now
-!/outputs
+!outputs/
+!outputs/**
+

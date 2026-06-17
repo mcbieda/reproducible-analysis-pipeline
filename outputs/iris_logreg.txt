@@ -1,0 +1,11 @@
+Logistic Regression — petal length + petal width
+==================================================
+Train size: 108   Test size: 28
+Accuracy (test set):        0.9643
+Accuracy (full dataset):    0.9706
+
+Confusion matrix (rows=actual, cols=predicted):
+                            setosa    versicolor     virginica
+setosa                           9             0             0
+versicolor                       0             8             1
+virginica                        0             0            10
