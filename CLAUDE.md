@@ -47,6 +47,7 @@ Specification documents for the utility scripts live in `docs/`:
 - `docs/spec-iris-modification.md` — spec for `utilities/iris-modification.py`
 - `docs/spec-iris-make-idmap-qc-files.md` — spec for `utilities/iris-make-map-qc.py`
 - `docs/spec-iris-merge-and-qc.md` — spec for `scripts/iris-merge-and-qc.py`
+- `docs/spec-iris-analysis-pipeline.md` — spec for `scripts/run_analysis.py` and `src/iris/`
 
 ## Architecture notes
 
