@@ -26,7 +26,7 @@ Each stage of the pipeline is designed to illustrate a pattern common in scienti
 In a standard analysis, an **ID mapping file** (linking sample IDs to canonical identifiers) and a **QC calls file** (recording pass/fail status per sample) would be supplied from upstream sources — a sample tracking system and a QC pipeline respectively. The analysis pipeline in `scripts/` is designed around this assumption.
 
 ```
-data/iris-all-samples.csv (a modified iris data file)    │
+data_derived/iris-all-samples.csv (a modified iris data file)    │
     ▼
 scripts/iris-merge-and-qc.py   ← receives iris-id-map.csv and iris-qc-calls.csv as inputs
     ├── data_derived/iris-samples-id-mapped.csv
@@ -99,7 +99,7 @@ python scripts/iris-merge-and-qc.py
 python scripts/run_analysis.py
 ```
 
-All intermediate files land in `data_derived/`. Final outputs — charts, stats, HTML report, and JSON join summaries — land in `outputs/`. Note that the HTML report summarizes the data analysis, but not the ID mapping and filtering steps.
+All intermediate files land in `data_derived/`. Final outputs — charts, stats, HTML report, and JSON join summaries — land in `outputs/`. The HTML report includes a pipeline sample counts section showing how many samples were retained at each stage.
 
 ---
 
@@ -116,6 +116,17 @@ All intermediate files land in `data_derived/`. Final outputs — charts, stats,
 | `iris_report.html` | Self-contained HTML report with provenance |
 | `iris-samples-id-mapped-summary.json` | Join diagnostics: ID mapping merge |
 | `iris-samples-id-mapped-qc-filtered-summary.json` | Join diagnostics: QC merge |
+
+---
+
+## Specifications
+
+Each script has a corresponding spec in `docs/` with enough detail for an LLM to reproduce the implementation from scratch given only the specs and the raw data in `data/`:
+
+- `docs/spec-iris-modification.md` — `utilities/iris-modification.py`
+- `docs/spec-iris-make-idmap-qc-files.md` — `utilities/iris-make-map-qc.py`
+- `docs/spec-iris-merge-and-qc.md` — `scripts/iris-merge-and-qc.py`
+- `docs/spec-iris-analysis-pipeline.md` — `scripts/run_analysis.py` and `src/iris/`
 
 ---
 
