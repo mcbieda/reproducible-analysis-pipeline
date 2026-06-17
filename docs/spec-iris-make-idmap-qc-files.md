@@ -28,8 +28,10 @@ The resulting python program will be named iris-make-map-qc.py
  		- example: Like "FINAL-008"
  		- the three digit number must be from 001 to 899, and has zeros to begin to always be three digits
  		- each FINAL_ID must be unique
-	- create 8 extra rows with simulated sampleID and FINAL_ID, following rules for these
-		- make sure that these 8 rows do not have sampleID or FINAL_ID that match any other entries
+	- create 8 extra rows with simulated sampleID and FINAL_ID
+		- simulated sampleIDs follow the same format as above: upper case letter A-F, four digit number 0001-8999
+		- simulated sampleIDs must not match any sampleID already present in iris-all-samples.csv or elsewhere in this file
+		- simulated FINAL_IDs must not match any FINAL_ID already in this file
  	- the final file is csv format
  
 

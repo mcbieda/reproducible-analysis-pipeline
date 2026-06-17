@@ -26,10 +26,13 @@ The resulting python program will be named iris-merge-and-qc.py
  	- use sampleID from iris-all-samples.csv
  	- merge with (inner_join) iris-id-map.csv to give a final file with all columns from
  	  iris-all-samples.csv plus FINAL_ID
- 	- output outputs/iris-samples-id-mapped-summary.json with the summarized results of the join:
- 		- the number that are unique to each file
- 		- the individual IDs (sampleID) for each file that are not in common
- 		- the number that are in common
+ 	- output outputs/iris-samples-id-mapped-summary.json with the summarized results of the join,
+ 	  using exactly these field names:
+ 		- "n_in_combined_only": number of sampleIDs only in iris-all-samples.csv
+ 		- "ids_in_combined_only": sorted list of those sampleIDs
+ 		- "n_in_mapids_only": number of sampleIDs only in iris-id-map.csv
+ 		- "ids_in_mapids_only": sorted list of those sampleIDs
+ 		- "n_in_common": number of sampleIDs in common
  	- the csv output should eliminate all unpaired combinations, like an inner_join
  	- the final file is csv format for iris-samples-id-mapped.csv
  	
@@ -39,10 +42,13 @@ The resulting python program will be named iris-merge-and-qc.py
  	- use FINAL_ID from iris-samples-id-mapped.csv
  	- merge with (inner_join) iris-qc-calls.csv to give a final file with all columns from
  	  iris-samples-id-mapped.csv plus QC_CALL
- 	- output outputs/iris-samples-id-mapped-qc-filtered-summary.json with the summarized results of the join:
- 	 		- the number that are unique to each file
- 	 		- the individual IDs (FINAL_ID) for each file that are not in common
- 	 		- the number that are in common
+ 	- output outputs/iris-samples-id-mapped-qc-filtered-summary.json with the summarized results of the join,
+ 	  using exactly these field names:
+ 	 		- "n_in_combined_mapids_only": number of FINAL_IDs only in iris-samples-id-mapped.csv
+ 	 		- "ids_in_combined_mapids_only": sorted list of those FINAL_IDs
+ 	 		- "n_in_qc_only": number of FINAL_IDs only in iris-qc-calls.csv
+ 	 		- "ids_in_qc_only": sorted list of those FINAL_IDs
+ 	 		- "n_in_common": number of FINAL_IDs in common
  	- the csv output should eliminate all unpaired combinations, like an inner_join 
  	- output to csv
 
