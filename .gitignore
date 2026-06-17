@@ -15,5 +15,9 @@
 !utilities/**
 !data_derived/
 !data_derived/**
+
 __pycache__
 *.pyc
+
+# keep /outputs now
+!/outputs
