@@ -4,6 +4,8 @@ A major issue with agentic coding is trusting the results. Intermediate outputs 
 
 The focus is on two ideas: (1) making every pipeline stage an explicit, inspectable artifact rather than an in-memory transformation, and (2) exploring how agentic coding can support good data engineering practices when explicit specifications and reproducibility are treated as critical and necessary.
 
+_I've elected to include the outputs so that it is trivial to see the actual outputs and compare to the (soon to be present) reproduction repo._  
+
 **This repo will be updated periodically to test approaches to code and output validation.**
 
 ---
