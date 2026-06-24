@@ -1,38 +1,125 @@
 # Reproducible Analysis Pipeline
 
-A major issue with agentic coding is trusting the results. Intermediate outputs allow one to inspect and verify steps along the way to the final outputs, as opposed to hoping that they are correct. Here I present a demonstration of reproducible scientific analysis pipelines built using agentic coding with [Claude Code](https://claude.ai/code). The project uses a modified Fisher's Iris dataset to illustrate a realistic multi-stage pipeline: ID mapping from one set of IDs to another, QC filtering, exploratory data analysis, and machine learning. Notably, there are IDs that don't map to the final IDs and also samples that fail QC and some that don't have QC information. There are some intermediate outputs that display these ids for investigation.
+## Overall Goal
 
-The focus is on two ideas: (1) making every pipeline stage an explicit, inspectable artifact rather than an in-memory transformation, and (2) exploring how agentic coding can support good data engineering practices when explicit specifications and reproducibility are treated as critical and necessary.
+**How do we build confidence in AI-assisted data analysis pipelines?**
 
-_I've elected to include the outputs so that it is trivial to see the actual outputs and compare to the (soon to be present) reproduction repo._  
+This repository demonstrates a small but somewhat realistic scientific data analysis pipeline built with
+agentic coding using [Claude Code](https://claude.ai/code). It uses a modified Fisher's Iris
+dataset to illustrate a multi-stage workflow involving sample ID mapping, QC filtering,
+exploratory analysis, statistical summaries, and machine learning.
 
-**This repo will be updated periodically to test approaches to code and output validation.**
+This repository is the **reference implementation**. A companion repository,
+[`reproducible-analysis-pipeline-reproduction-check-analysis`](https://github.com/mcbieda/reproducible-analysis-pipeline-reproduction-check-analysis),
+independently reimplements the final analysis stage from the same specification and input data
+to check whether the analytical results can be reproduced.
+
+**Can a different implementation reproduce the same analytical results?**
+
+Yes. The companion reproduction repository produces the same analytical results from a different
+implementation. This provides a practical example of specification-driven validation: instead of
+trusting that generated code is correct, we define expected behavior, regenerate the analysis
+independently, and compare the outputs.
+
+**What does this repository demonstrate?**
+
+This repository demonstrates two related ideas:
+
+1. **Reproducible pipeline design** — each pipeline stage writes explicit, inspectable artifacts
+   rather than relying on hidden in-memory transformations.
+2. **Validation of agentic coding outputs** — analysis code generated or developed with AI
+   assistance still needs independent output-level checks.
+
+The key point is simple: generating code is not enough. For scientific and analytical workflows,
+the outputs need to be inspectable, reproducible, and independently checkable.
+
+---
+
+## Relationship to the Reproduction Repository
+
+| | This repository | Companion reproduction repository |
+|---|---|---|
+| Role | Reference implementation | Independent reproduction check |
+| Scope | Full demonstration pipeline | Final analysis stage only |
+| Input | Raw iris data plus generated demonstration files | QC-filtered CSV from this pipeline |
+| Purpose | Build the pipeline and produce reference outputs | Verify that the analytical outputs can be reproduced |
+| Code relationship | Original implementation | Reimplemented from specification, not copied |
+
+This repository has a broader scope than the reproduction repository. It includes utilities that
+create realistic demonstration inputs, including modified iris data, sample IDs, ID mappings, and
+QC calls. The reproduction repository starts later in the workflow: it takes the final
+QC-filtered input file and independently reproduces the final analysis outputs.
+
+Together, the two repositories demonstrate a simple validation pattern:
+
+1. Build a reference analysis pipeline.
+2. Write explicit specifications for the pipeline behavior.
+3. Reimplement the analytically important stage from the specification.
+4. Compare the reproduced outputs against the reference outputs.
+5. Document exact matches and expected differences.
+
+---
+
+## Project Overview
+
+The pipeline uses a modified version of the Fisher's Iris dataset to mimic features common in
+real scientific analysis workflows:
+
+- raw input data that must be prepared before analysis
+- sample IDs that need to be mapped to final canonical IDs
+- missing or unmatched IDs
+- QC calls that determine which samples are retained
+- intermediate files that allow each transformation to be inspected
+- final statistical and machine learning outputs
+- a self-contained HTML report with provenance metadata
+
+The pipeline is intentionally small, but the structure reflects larger real-world workflows:
+data preparation, ID mapping, QC merge, analysis, reporting, and validation.
 
 ---
 
 ## What This Demonstrates
 
-Each stage of the pipeline is designed to illustrate a pattern common in scientific data analysis:
+Each stage of the pipeline illustrates a pattern common in scientific data analysis.
 
-- **Explicit intermediate outputs** — every transformation writes a named file to `data_derived/`, making the pipeline auditable and each step independently inspectable
-- **ID mapping with missing IDs** — samples flow through the pipeline under their original IDs until they are linked to a canonical identifier via an explicit merge, with diagnostics recording what matched and what didn't
-- **QC filtering with provenance and missing QC values** — QC calls are applied as a join rather than an in-place filter, so the pre- and post-QC datasets both exist and the filtering decision is recorded
-- **Reproducibility by construction** — fixed random seeds, explicit computation of statistics, and no in-memory state between stages
+- **Explicit intermediate outputs**  
+  Every transformation writes a named file to `data_derived/`, making the pipeline auditable and
+  each step independently inspectable.
+
+- **ID mapping with missing IDs**  
+  Samples flow through the pipeline under their original IDs until they are linked to canonical
+  identifiers through an explicit mapping step. Diagnostics record which IDs matched and which
+  did not.
+
+- **QC filtering with provenance**  
+  QC calls are applied through a merge rather than an invisible in-memory filter. Both pre-QC and
+  post-QC datasets are retained, and the filtering decision is recorded.
+
+- **Reproducibility by construction**  
+  Random seeds are fixed, outputs are written to disk, and the analysis does not depend on hidden
+  notebook state.
+
+- **Specification-driven validation**  
+  The repository includes specifications detailed enough for the final analysis stage to be
+  reimplemented independently and checked against the reference outputs.
 
 ---
 
 ## Typical Pipeline Flow
 
-In a standard analysis, an **ID mapping file** (linking sample IDs to canonical identifiers) and a **QC calls file** (recording pass/fail status per sample) would be supplied from upstream sources — a sample tracking system and a QC pipeline respectively. The analysis pipeline in `scripts/` is designed around this assumption.
+In a standard analysis, an **ID mapping file** and a **QC calls file** would often come from
+upstream systems, such as a sample tracking system and a QC pipeline. This demonstration
+generates those inputs locally so that the full workflow is self-contained.
 
-```
-data_derived/iris-all-samples.csv (a modified iris data file)    │
+```text
+data_derived/iris-all-samples.csv
+    │
     ▼
-scripts/iris-merge-and-qc.py   ← receives iris-id-map.csv and iris-qc-calls.csv as inputs
+scripts/iris-merge-and-qc.py
     ├── data_derived/iris-samples-id-mapped.csv
-    ├── outputs/iris-samples-id-mapped-summary.json        (id join diagnostics)
+    ├── outputs/iris-samples-id-mapped-summary.json
     ├── data_derived/iris-samples-id-mapped-qc-filtered.csv
-    └── outputs/iris-samples-id-mapped-qc-filtered-summary.json (summary of qc filtering)
+    └── outputs/iris-samples-id-mapped-qc-filtered-summary.json
     │
     ▼
 scripts/run_analysis.py
@@ -47,59 +134,65 @@ scripts/run_analysis.py
 
 ---
 
-## Generating Data for Demonstration
+## Generating Demonstration Data
 
-The `iris` dataset does not contain sampleIDs or column names, as given in typical files. Nor is there a need for any QC calls on the samples. To make this a more realistic and fully self-contained demonstration, `utilities/` contains scripts that generate the input files the pipeline would normally receive from upstream. These are not part of the analysis itself — they exist to produce realistic inputs. Altering these to add additional samples or samples with different characteristics is straightforward.
+The original iris dataset does not contain sample IDs, canonical IDs, or QC calls. To make the
+example more realistic, the `utilities/` directory contains scripts that generate the files a
+pipeline like this might normally receive from upstream sources.
 
-```
+```text
 data/iris.data
     │
     ▼
 utilities/iris-modification.py
-    ├── data_derived/iris-original-add-ids.csv    (raw data + column names + sampleIDs)
-    ├── data_derived/iris-simulated-data.csv       (simulated samples from class means)
-    └── data_derived/iris-all-samples.csv          (combined; final input file of sample data)
+    ├── data_derived/iris-original-add-ids.csv
+    ├── data_derived/iris-simulated-data.csv
+    └── data_derived/iris-all-samples.csv
 
 utilities/iris-make-map-qc.py
-    ├── data_derived/iris-id-map.csv               (sampleID → FINAL_ID mapping)
-    └── data_derived/iris-qc-calls.csv             (FINAL_ID + PASS/FAIL QC calls)
+    ├── data_derived/iris-id-map.csv
+    └── data_derived/iris-qc-calls.csv
 ```
 
-`iris-make-map-qc.py` generates an ID mapping file and QC calls file with realistic characteristics — deliberate mismatches, extra IDs on both sides, and a realistic PASS/FAIL rate — so that the merge and QC filtering steps in `scripts/` behave as they would against real upstream inputs.
+`iris-modification.py` adds column names and sample IDs to the original iris data and creates
+additional simulated samples.
+
+`iris-make-map-qc.py` generates an ID mapping file and a QC calls file. These include realistic
+edge cases such as deliberate mismatches, extra IDs, failed QC calls, and missing QC information.
+Those edge cases allow the merge and QC stages to produce useful diagnostics rather than simply
+passing every row through the pipeline.
+
+The utility scripts are not the scientific analysis itself. They exist to create realistic,
+self-contained demonstration inputs.
 
 ---
 
-## Project Structure
+## Running the Pipeline
 
-```
-├── data/                  Raw input data (never modified)
-├── data_derived/          Intermediate pipeline outputs
-├── outputs/               Final analysis outputs (charts, stats, reports, JSON summaries)
-├── scripts/               Analysis pipeline
-│   ├── iris-merge-and-qc.py    ID mapping + QC filtering
-│   └── run_analysis.py         EDA and ML analysis
-├── src/iris/              Importable Python package (loading, stats, charts, model, report)
-├── utilities/             Standalone scripts for generating demonstration input files
-└── docs/                  Methods documentation and pipeline specifications
-```
-
----
-
-## Running It
+Install dependencies:
 
 ```bash
 pip install -r requirements.txt
+```
 
-# Generate demonstration inputs (utilities — not part of the analysis)
+Generate demonstration inputs:
+
+```bash
 python utilities/iris-modification.py
 python utilities/iris-make-map-qc.py
+```
 
-# Run the analysis pipeline (scripts)
+Run the analysis pipeline:
+
+```bash
 python scripts/iris-merge-and-qc.py
 python scripts/run_analysis.py
 ```
 
-All intermediate files land in `data_derived/`. Final outputs — charts, stats, HTML report, and JSON join summaries — land in `outputs/`. The HTML report includes a pipeline sample counts section showing how many samples were retained at each stage.
+Intermediate files are written to `data_derived/`.
+
+Final outputs, including charts, statistics, reports, and JSON summaries, are written to
+`outputs/`.
 
 ---
 
@@ -107,36 +200,128 @@ All intermediate files land in `data_derived/`. Final outputs — charts, stats,
 
 | File | Description |
 |---|---|
-| `iris_stats.txt` | Per-class mean, median, and SD for all four measurements |
+| `iris_stats.txt` | Per-class mean, median, and sample standard deviation for all four measurements |
 | `iris_means.png` | Grouped bar chart of means ± 1 SD by class |
-| `iris_scatter.png` | Petal length vs. width scatter plot colored by class |
+| `iris_scatter.png` | Petal length vs. petal width scatter plot colored by class |
 | `iris_logreg.txt` | Logistic regression accuracy and confusion matrix |
-| `iris_logreg.png` | Decision boundary on test-set points |
-| `iris_scatterplot_withboundaries.png` | Decision boundary on full dataset |
-| `iris_report.html` | Self-contained HTML report with provenance |
-| `iris-samples-id-mapped-summary.json` | Join diagnostics: ID mapping merge |
-| `iris-samples-id-mapped-qc-filtered-summary.json` | Join diagnostics: QC merge |
+| `iris_logreg.png` | Decision boundary plot on test-set points |
+| `iris_scatterplot_withboundaries.png` | Decision boundary plot on the full dataset |
+| `iris_report.html` | Self-contained HTML report with embedded images and provenance metadata |
+| `iris-samples-id-mapped-summary.json` | ID mapping join diagnostics |
+| `iris-samples-id-mapped-qc-filtered-summary.json` | QC merge and filtering diagnostics |
+
+The HTML report includes provenance metadata and sample counts showing how many samples were
+retained at each stage.
 
 ---
 
 ## Specifications
 
-Each script has a corresponding spec in `docs/` with enough detail for an LLM to reproduce the implementation from scratch given only the specs and the raw data in `data/`:
+Each major script has a corresponding specification in `docs/`.
 
-- `docs/spec-iris-modification.md` — `utilities/iris-modification.py`
-- `docs/spec-iris-make-idmap-qc-files.md` — `utilities/iris-make-map-qc.py`
-- `docs/spec-iris-merge-and-qc.md` — `scripts/iris-merge-and-qc.py`
-- `docs/spec-iris-analysis-pipeline.md` — `scripts/run_analysis.py` and `src/iris/`
+| Specification | Corresponding code |
+|---|---|
+| `docs/spec-iris-modification.md` | `utilities/iris-modification.py` |
+| `docs/spec-iris-make-idmap-qc-files.md` | `utilities/iris-make-map-qc.py` |
+| `docs/spec-iris-merge-and-qc.md` | `scripts/iris-merge-and-qc.py` |
+| `docs/spec-iris-analysis-pipeline.md` | `scripts/run_analysis.py` and `src/iris/` |
+
+The final analysis specification is also used by the companion reproduction repository to
+independently recreate the analysis stage and compare the outputs against this reference
+implementation.
 
 ---
 
 ## Reproducibility
 
-All random operations use a fixed seed of 42. Running the pipeline from scratch will reproduce all intermediate files and outputs exactly. Statistics are computed without numpy or pandas to keep the implementation transparent.
+All random operations use a fixed seed of `42`.
+
+Running the pipeline from scratch should reproduce the same intermediate files and final outputs,
+assuming the same dependency versions.
+
+Descriptive statistics are computed explicitly rather than relying on NumPy or pandas summary
+functions. This is intentional: the goal is to make the calculation logic transparent and easy to
+inspect.
+
+---
+
+## Validation Pattern
+
+This repository is part of a two-repository validation pattern.
+
+The first repository — this one — builds the full reference pipeline and produces the expected
+outputs.
+
+The second repository independently reimplements the final analysis stage using the same
+specification and the same QC-filtered input data. The reproduced results are then compared
+against the reference outputs.
+
+This is related to a “double programming” approach: two implementations are allowed to differ
+internally, but they should converge on the same externally visible analytical results.
+
+The important validation question is not:
+
+> Did the generated code look plausible?
+
+The important validation question is:
+
+> Did an independent implementation reproduce the same analytical outputs?
+
+---
+
+## Project Structure
+
+```text
+├── data/
+│   └── Raw input data
+
+├── data_derived/
+│   └── Intermediate pipeline outputs
+
+├── outputs/
+│   └── Final analysis outputs, charts, reports, and JSON summaries
+
+├── scripts/
+│   ├── iris-merge-and-qc.py
+│   └── run_analysis.py
+
+├── src/iris/
+│   └── Importable Python package for loading, statistics, charts, modeling, and reporting
+
+├── utilities/
+│   └── Standalone scripts for generating demonstration input files
+
+└── docs/
+    └── Methods documentation and pipeline specifications
+```
 
 ---
 
 ## Dependencies
 
 - Python 3.8+
-- `matplotlib`, `numpy`, `scikit-learn`
+- `matplotlib`
+- `numpy`
+- `scikit-learn`
+
+See `requirements.txt` for pinned versions.
+
+---
+
+## Why This Matters
+
+Agentic coding can quickly produce useful analysis code, but speed does not remove the need for
+validation. In data analysis, correctness depends on the outputs, not just on whether the code
+runs or looks reasonable.
+
+This repository demonstrates a practical approach:
+
+1. make each pipeline stage explicit
+2. write inspectable intermediate outputs
+3. document the intended behavior in specifications
+4. produce reference outputs
+5. independently reproduce the analytically important stage
+6. compare the reproduced outputs against the reference results
+
+The broader lesson is that AI-assisted analysis pipelines should be designed for verification
+from the beginning.
