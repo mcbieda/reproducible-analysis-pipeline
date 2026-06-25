@@ -2,7 +2,7 @@
 
 ## Overall Goal
 
-**How do we build confidence in AI-assisted data analysis pipelines?**
+**I'm using agentic coding for data analysis. How do I trust the results?**
 
 This repository demonstrates a small but somewhat realistic scientific data analysis pipeline built with
 agentic coding using [Claude Code](https://claude.ai/code). It uses a modified Fisher's Iris
@@ -13,6 +13,8 @@ This repository is the **reference implementation**. A companion repository,
 [`reproducible-analysis-pipeline-reproduction-check-analysis`](https://github.com/mcbieda/reproducible-analysis-pipeline-reproduction-check-analysis),
 independently reimplements the final analysis stage from the same specification and input data
 to check whether the analytical results can be reproduced.
+
+Of course, this is just **one** part of verifying results: for this small analysis, examining the code closely is easy; looking at whether results are reasonable is, of course, required; and some basic sanity checks like numbers of samples are pretty simple. But the idea of reimplementing is a very attractive option to (partially) validate results.
 
 **Can a different implementation reproduce the same analytical results?**
 
@@ -41,7 +43,7 @@ the outputs need to be inspectable, reproducible, and independently checkable.
 |---|---|---|
 | Role | Reference implementation | Independent reproduction check |
 | Scope | Full demonstration pipeline | Final analysis stage only |
-| Input | Raw iris data plus generated demonstration files | QC-filtered CSV from this pipeline |
+| Input | Raw iris data plus generated demonstration files | the modified data from this pipeline |
 | Purpose | Build the pipeline and produce reference outputs | Verify that the analytical outputs can be reproduced |
 | Code relationship | Original implementation | Reimplemented from specification, not copied |
 
@@ -50,13 +52,15 @@ create realistic demonstration inputs, including modified iris data, sample IDs,
 QC calls. The reproduction repository starts later in the workflow: it takes the final
 QC-filtered input file and independently reproduces the final analysis outputs.
 
-Together, the two repositories demonstrate a simple validation pattern:
+Together, the two repositories demonstrate a one key part in a validation process:
 
 1. Build a reference analysis pipeline.
 2. Write explicit specifications for the pipeline behavior.
 3. Reimplement the analytically important stage from the specification.
 4. Compare the reproduced outputs against the reference outputs.
 5. Document exact matches and expected differences.
+
+**Other steps would include: examining whether results are reasonable; doing basic sanity checks with the numbers/sample characteristics; examining the code.**
 
 ---
 
@@ -259,13 +263,10 @@ against the reference outputs.
 This is related to a “double programming” approach: two implementations are allowed to differ
 internally, but they should converge on the same externally visible analytical results.
 
-The important validation question is not:
-
-> Did the generated code look plausible?
 
 The important validation question is:
 
-> Did an independent implementation reproduce the same analytical outputs?
+> Did an independent implementation reproduce the same analytical outputs? _(and it did)_
 
 ---
 
